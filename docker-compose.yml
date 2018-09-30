@@ -1,0 +1,40 @@
+version: '2.1' # Using 2.1 for healthcheck
+
+services:
+
+  rhodddoobie:
+    image: rhodddoobie:1.0-SNAPSHOT
+    environment:
+      - HTTP_PORT=${SERVER_HTTP_PORT:-8080}
+      - DB_USER=${POSTGRES_USER:-user}
+      - DB_HOST=${POSTGRES_HOST:-postgres}
+      - DB_PORT=${POSTGRES_PORT:-5432}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-passw0rd}
+      - DB_NAME=${POSTGRES_DB:-database}
+    ports:
+      - "80:8080"
+    links:
+      - postgres
+    depends_on:
+      - proxy-dep
+
+  # proxy dependency in order to make sure postgres is running when executing docker-compose run
+  proxy-dep:
+    image: busybox
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:9.6.5-alpine
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-passw0rd}
+      - POSTGRES_DB=${POSTGRES_DB:-database}
+    ports:
+      - "5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 1s
+      timeout: 1s
+      retries: 50
