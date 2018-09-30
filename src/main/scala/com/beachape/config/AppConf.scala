@@ -3,7 +3,12 @@ package com.beachape.config
 import pureconfig.error.ConfigReaderFailures
 import pureconfig.module.enumeratum._
 
-final case class AppConf(server: ServerConf, db: DBConf, swagger: SwaggerConf)
+/**
+  * Our app-level config.
+  *
+  * PureConfig is used in this project to parse config into this typed object.
+  */
+final case class AppConf(server: ServerConf, db: DBConf)
 
 object AppConf {
 

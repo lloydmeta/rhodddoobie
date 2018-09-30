@@ -9,6 +9,9 @@ import doobie.implicits._
 import doobie.util.transactor.Transactor
 import TypeMappers._
 
+/**
+  * Interface for a repository that deals with `ResourceEntity`s
+  */
 abstract class ResourcesRepo[F[_]: Effect] {
 
   def get(resourceId: ResourceId): F[Option[ResourceEntity]]

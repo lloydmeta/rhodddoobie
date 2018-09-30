@@ -9,6 +9,9 @@ import io.scalaland.chimney.dsl._
 
 import ResourcesManager._
 
+/**
+  * Same thing as [[DeploymentsManager]] but for `Resource`s.
+  */
 class ResourcesManager[F[+ _]: Effect](resourcesRepo: ResourcesRepo[F]) {
 
   def get(resourceId: ResourceId): F[Option[Resource]] =

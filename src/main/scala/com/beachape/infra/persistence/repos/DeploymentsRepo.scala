@@ -13,6 +13,9 @@ import io.scalaland.chimney.dsl._
 import TypeMappers._
 import cats.{Monad, Traverse}
 
+/**
+  * Interface for a repository that deals with `DeploymentEntity`s
+  */
 abstract class DeploymentsRepo[F[_]: Effect] {
 
   import DeploymentsRepo._
@@ -66,6 +69,9 @@ object DeploymentsRepo {
 
   object Doobie {
 
+    /**
+      * Holds various SQL queries that power our Doobie implementation of [[DeploymentsRepo]]
+      */
     object Queries {
 
       private[persistence] def getQuery(
@@ -340,11 +346,10 @@ object DeploymentsRepo {
                          ref: Ref,
                          data: ResourceEntity.Data): F[Either[NoSuchResource, ResourceEntity]] = {
         val q = for {
-
           updated <- updateResourceQuery(deploymentId, kind, ref, data).run // can't use RETURNING and still have H2 work...
-          retrieved <- if (updated == 1) // let's not go there
+          retrieved <- if (updated == 1)
             getResourceQuery(deploymentId, kind, ref).option
-          else
+          else // If we did not update exactly one, use the escape hatch
             HC.rollback *> Option.empty[ResourceEntity].pure[ConnectionIO]
           r <- Monad[ConnectionIO].pure {
             retrieved match {

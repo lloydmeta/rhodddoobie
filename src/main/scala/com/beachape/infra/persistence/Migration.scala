@@ -1,28 +1,29 @@
 package com.beachape.infra.persistence
 
-import cats.effect.IO
+import cats.effect.Effect
 import com.beachape.config.DBConf
 import org.flywaydb.core.Flyway
 
-import scala.util.Try
-
 object Migration {
 
-  final case class Success(migrationsRun: Int)    extends AnyVal
-  final case class Failure(underlying: Throwable) extends AnyVal
+  final case class Result(migrationsRun: Int) extends AnyVal
 
-  def withConfig(dbConfig: DBConf): IO[Either[Failure, Success]] = IO {
+  /**
+    * Given a `DBConf`, if configured to do so, attempts to auto-run migrations on the database
+    */
+  def withConfig[F[_]: Effect](dbConfig: DBConf): F[Result] = Effect[F].delay {
     if (dbConfig.autoMigrate) {
-      Try {
-        val dataSource = HikariOps.toDataSource(dbConfig)
-        val flyway     = new Flyway()
+      val dataSource = HikariOps.toDataSource(dbConfig)
+      try {
+        val flyway = new Flyway()
         flyway.setDataSource(dataSource)
         val migrationsRun = flyway.migrate()
+        Result(migrationsRun)
+      } finally {
         dataSource.close()
-        Success(migrationsRun)
-      }.toEither.left.map(Failure.apply)
+      }
     } else {
-      Right(Success(0))
+      Result(0)
     }
   }
 

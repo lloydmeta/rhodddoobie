@@ -14,11 +14,11 @@ import helpers.DockerPostgresService
 class QuerySoundnessSpec extends FunSpec with Matchers with IOChecker with DockerPostgresService {
 
   lazy val transactor: HikariTransactor[IO] =
-    HikariOps.toTransactor(PostgresDBConfig).unsafeRunSync()
+    HikariOps.toTransactor[IO](PostgresDBConfig).unsafeRunSync()
 
   override def beforeAll(): Unit = {
     super.beforeAll()
-    Migration.withConfig(PostgresDBConfig).unsafeRunSync()
+    Migration.withConfig[IO](PostgresDBConfig).unsafeRunSync()
     ()
   }
 

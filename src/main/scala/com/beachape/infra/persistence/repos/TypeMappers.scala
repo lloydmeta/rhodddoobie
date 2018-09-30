@@ -3,6 +3,11 @@ import com.beachape.ids.{DeploymentId, Ref, ResourceId}
 import com.beachape.infra.persistence.enums._
 import doobie.Meta
 
+/**
+  * Module that holds various complex-Scala-type-to-simple-SQL-mappable-type typeclass instances for Doobie.
+  *
+  * Imported where needed.
+  */
 object TypeMappers {
 
   implicit val deploymentIdMeta: Meta[DeploymentId] =

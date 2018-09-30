@@ -7,6 +7,10 @@ import org.http4s.rho.bits.{FailureResponse, ResultResponse, StringParser, Succe
 
 import scala.reflect.runtime.universe
 
+/**
+  * A mix-in trait for holding Rho `StringParsers`s, which allow us to parse various types out
+  * from path parameters in our routes.
+  */
 trait Parsers[F[_]] {
 
   implicit val deploymentIdParser: StringParser[F, DeploymentId] =

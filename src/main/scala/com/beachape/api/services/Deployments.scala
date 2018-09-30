@@ -16,6 +16,15 @@ import com.beachape.app.services.DeploymentsManager
 import com.beachape.app.services.DeploymentsManager._
 import com.beachape.ids.{DeploymentId, Ref}
 
+/**
+  * This is our router/controller for handling Deployments.
+  *
+  * Note that we are extending `RhoService`, which gives us the ability to both define and implement
+  * our routes **in addition to** writing the necessary metadata for generating OpenApi/Swagger
+  * docs. Notice that *everything is data**
+  *
+  * As with many Sinatra/Scalatra style frameworks, the router/controller line is a bit blurred.
+  */
 @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.Any"))
 class Deployments[F[+ _]: Effect: Monad](deploymentsManager: DeploymentsManager[F],
                                          swaggerSyntax: SwaggerSyntax[F])
@@ -44,7 +53,7 @@ class Deployments[F[+ _]: Effect: Monad](deploymentsManager: DeploymentsManager[
     GET / deployments / deploymentIdVar |>> { deploymentId: DeploymentId =>
     deploymentsManager.get(deploymentId).flatMap {
       case Some(deployment) => Ok(deployment)
-      case None             => NotFound(Error(s"No Deployment with id [$deploymentId]"))
+      case None             => NotFound(Error(s"No Deployment with id [$deploymentId]."))
     }
   }
 
@@ -66,7 +75,7 @@ class Deployments[F[+ _]: Effect: Monad](deploymentsManager: DeploymentsManager[
   "Delete a Deployment" **
     DELETE / deployments / deploymentIdVar |>> { deploymentId: DeploymentId =>
     deploymentsManager.delete(deploymentId).flatMap {
-      case Right(()) => Ok(Success(Some(s"Deleted [$deploymentId] rows.")))
+      case Right(()) => Ok(Success(Some(s"Deleted [$deploymentId].")))
       case Left(_: NoSuchDeployment) =>
         NotFound(Error(s"No such Deployment was found by [$deploymentId]."))
     }
@@ -78,7 +87,7 @@ class Deployments[F[+ _]: Effect: Monad](deploymentsManager: DeploymentsManager[
       deploymentsManager.update(id, data).flatMap {
         case Right(data) => Ok(data)
         case Left(_: NoSuchDeployment) =>
-          NotFound(Error(s"No such deployment: [$id]"))
+          NotFound(Error(s"No such deployment: [$id]."))
       }
   }
 
@@ -101,7 +110,7 @@ class Deployments[F[+ _]: Effect: Monad](deploymentsManager: DeploymentsManager[
     (id: DeploymentId, kind: ResourceKind, ref: Ref) =>
       deploymentsManager.getResource(id, kind, ref).flatMap {
         case Some(resource) => Ok(resource)
-        case _              => NotFound(Error(s"No such Resource was found by [$id] [$kind] [$ref]"))
+        case _              => NotFound(Error(s"No such Resource was found by [$id] [$kind] [$ref]."))
       }
   }
 
@@ -120,10 +129,10 @@ class Deployments[F[+ _]: Effect: Monad](deploymentsManager: DeploymentsManager[
     DELETE / deployments / deploymentIdVar / resources / kindVar / refVar |>> {
     (id: DeploymentId, kind: ResourceKind, ref: Ref) =>
       deploymentsManager.deleteResource(id, kind, ref).flatMap {
-        case Right(()) => Ok(Success(Some(s"Deleted Resource")))
+        case Right(()) => Ok(Success(Some(s"Deleted Resource.")))
         case Left(noSuchResource) =>
           NotFound(Error(
-            s"No such Resource was found by [${noSuchResource.deploymentId}] [${noSuchResource.kind}] [${noSuchResource.ref}]"))
+            s"No such Resource was found by [${noSuchResource.deploymentId}] [${noSuchResource.kind}] [${noSuchResource.ref}]."))
       }
   }
 

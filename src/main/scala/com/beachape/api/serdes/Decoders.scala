@@ -8,6 +8,13 @@ import io.circe.Decoder
 import org.http4s.{DecodeResult, EntityDecoder}
 import org.http4s.circe._
 
+/**
+  * Holds a few Circe-backed JSON `Decoder` instances, as well as a deriver for http4s' `EntityDecoder` (bridge for
+  * using the Circe instances for decoding to http4s endpoints) so that things that can be decoded from JSON by Circe
+  * can be decoded in our routes.
+  *
+  * Note that in this project, we use full auto Circe derivation for the most part to reduce boilerplate.
+  */
 object Decoders extends JsonDecoders with Decoders
 
 trait Decoders {

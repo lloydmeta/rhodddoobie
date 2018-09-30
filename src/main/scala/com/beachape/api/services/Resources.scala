@@ -13,6 +13,11 @@ import com.beachape.app.services.ResourcesManager
 import com.beachape.app.services.ResourcesManager.NoSuchResource
 import com.beachape.ids._
 
+/**
+  * This is our router/controller for handling Resources.
+  *
+  * See the docs for the [[Deployments]] service for more info.
+  */
 @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements", "org.wartremover.warts.Any"))
 class Resources[F[+ _]: Effect: Monad](resourcesManager: ResourcesManager[F],
                                        swaggerSyntax: SwaggerSyntax[F])
@@ -39,8 +44,8 @@ class Resources[F[+ _]: Effect: Monad](resourcesManager: ResourcesManager[F],
   "Delete a Resource" **
     DELETE / resources / resourceIdVar |>> { resourceId: ResourceId =>
     resourcesManager.delete(resourceId).flatMap {
-      case Right(())               => Ok(Success(Some(s"Deleted [$resourceId]")))
-      case Left(_: NoSuchResource) => NotFound(Error(s"No such resource was found by $resourceId"))
+      case Right(())               => Ok(Success(Some(s"Deleted [$resourceId].")))
+      case Left(_: NoSuchResource) => NotFound(Error(s"No such resource was found by $resourceId."))
     }
   }
 
